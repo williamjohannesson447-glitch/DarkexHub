@@ -1,0 +1,263 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+-- Local player
+local player = Players.LocalPlayer
+
+-- Create ScreenGui for DarkexHub
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "DarkexHub"
+screenGui.Parent = player.PlayerGui
+screenGui.ResetOnSpawn = false
+
+-- Create Frame for GUI
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 150)
+frame.Position = UDim2.new(0, 10, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 2
+frame.Parent = screenGui
+
+-- Create Title Label
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+title.Text = "DarkexHub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.SourceSansBold
+title.Parent = frame
+
+-- Create Box Toggle Button
+local boxButton = Instance.new("TextButton")
+boxButton.Size = UDim2.new(0.9, 0, 0, 40)
+boxButton.Position = UDim2.new(0.05, 0, 0.3, 0)
+boxButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+boxButton.Text = "Box: OFF"
+boxButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+boxButton.TextScaled = true
+boxButton.Font = Enum.Font.SourceSans
+boxButton.Parent = frame
+
+-- Create Skeleton Toggle Button
+local skeletonButton = Instance.new("TextButton")
+skeletonButton.Size = UDim2.new(0.9, 0, 0, 40)
+skeletonButton.Position = UDim2.new(0.05, 0, 0.6, 0)
+skeletonButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+skeletonButton.Text = "Skeleton: OFF"
+skeletonButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+skeletonButton.TextScaled = true
+skeletonButton.Font = Enum.Font.SourceSans
+skeletonButton.Parent = frame
+
+-- State variables
+local boxEnabled = false
+local skeletonEnabled = false
+
+-- Function to create a box around a character
+local function addBox(char)
+    if char and not char:FindFirstChild("PlayerBox") then
+        local box = Instance.new("SelectionBox")
+        box.Name = "PlayerBox"
+        box.Parent = char
+        box.Adornee = char
+        box.LineThickness = 0.05
+        box.SurfaceTransparency = 1
+        box.Color3 = Color3.fromRGB(255, 0, 0) -- Red box
+        box.Transparency = 0
+    end
+end
+
+-- Function to remove box from a character
+local function removeBox(char)
+    local box = char:FindFirstChild("PlayerBox")
+    if box then
+        box:Destroy()
+    end
+end
+
+-- Function to create skeleton lines for a character
+local function addSkeleton(char)
+    if char and not char:FindFirstChild("SkeletonBeam1") then
+        local humanoidRootPart = char:FindFirstChild("HumanoidRootPart")
+        local head = char:FindFirstChild("Head")
+        local leftArm = char:FindFirstChild("Left Arm") or char:FindFirstChild("LeftUpperArm")
+        local rightArm = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightUpperArm")
+        local leftLeg = char:FindFirstChild("Left Leg") or char:FindFirstChild("LeftUpperLeg")
+        local rightLeg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightUpperLeg")
+        
+        if humanoidRootPart and head and leftArm and rightArm and leftLeg and rightLeg then
+            -- Torso (Root to Head)
+            local torsoAtt0 = Instance.new("Attachment", humanoidRootPart)
+            torsoAtt0.Name = "TorsoAtt0"
+            local torsoAtt1 = Instance.new("Attachment", head)
+            torsoAtt1.Name = "TorsoAtt1"
+            local torsoBeam = Instance.new("Beam")
+            torsoBeam.Name = "SkeletonBeam1"
+            torsoBeam.Parent = char
+            torsoBeam.Attachment0 = torsoAtt0
+            torsoBeam.Attachment1 = torsoAtt1
+            torsoBeam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+            torsoBeam.Width0 = 0.1
+            torsoBeam.Width1 = 0.1
+            torsoBeam.Transparency = NumberSequence.new(0)
+            
+            -- Left Arm
+            local leftArmAtt0 = Instance.new("Attachment", humanoidRootPart)
+            leftArmAtt0.Name = "LeftArmAtt0"
+            leftArmAtt0.Position = Vector3.new(-1, 0, 0)
+            local leftArmAtt1 = Instance.new("Attachment", leftArm)
+            leftArmAtt1.Name = "LeftArmAtt1"
+            local leftArmBeam = Instance.new("Beam")
+            leftArmBeam.Name = "SkeletonBeam2"
+            leftArmBeam.Parent = char
+            leftArmBeam.Attachment0 = leftArmAtt0
+            leftArmBeam.Attachment1 = leftArmAtt1
+            leftArmBeam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+            leftArmBeam.Width0 = 0.1
+            leftArmBeam.Width1 = 0.1
+            leftArmBeam.Transparency = NumberSequence.new(0)
+            
+            -- Right Arm
+            local rightArmAtt0 = Instance.new("Attachment", humanoidRootPart)
+            rightArmAtt0.Name = "RightArmAtt0"
+            rightArmAtt0.Position = Vector3.new(1, 0, 0)
+            local rightArmAtt1 = Instance.new("Attachment", rightArm)
+            rightArmAtt1.Name = "RightArmAtt1"
+            local rightArmBeam = Instance.new("Beam")
+            rightArmBeam.Name = "SkeletonBeam3"
+            rightArmBeam.Parent = char
+            rightArmBeam.Attachment0 = rightArmAtt0
+            rightArmBeam.Attachment1 = rightArmAtt1
+            rightArmBeam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+            rightArmBeam.Width0 = 0.1
+            rightArmBeam.Width1 = 0.1
+            rightArmBeam.Transparency = NumberSequence.new(0)
+            
+            -- Left Leg
+            local leftLegAtt0 = Instance.new("Attachment", humanoidRootPart)
+            leftLegAtt0.Name = "LeftLegAtt0"
+            leftLegAtt0.Position = Vector3.new(-0.5, -1, 0)
+            local leftLegAtt1 = Instance.new("Attachment", leftLeg)
+            leftLegAtt1.Name = "LeftLegAtt1"
+            local leftLegBeam = Instance.new("Beam")
+            leftLegBeam.Name = "SkeletonBeam4"
+            leftLegBeam.Parent = char
+            leftLegBeam.Attachment0 = leftLegAtt0
+            leftLegBeam.Attachment1 = leftLegAtt1
+            leftLegBeam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+            leftLegBeam.Width0 = 0.1
+            leftLegBeam.Width1 = 0.1
+            leftLegBeam.Transparency = NumberSequence.new(0)
+            
+            -- Right Leg
+            local rightLegAtt0 = Instance.new("Attachment", humanoidRootPart)
+            rightLegAtt0.Name = "RightLegAtt0"
+            rightLegAtt0.Position = Vector3.new(0.5, -1, 0)
+            local rightLegAtt1 = Instance.new("Attachment", rightLeg)
+            rightLegAtt1.Name = "RightLegAtt1"
+            local rightLegBeam = Instance.new("Beam")
+            rightLegBeam.Name = "SkeletonBeam5"
+            rightLegBeam.Parent = char
+            rightLegBeam.Attachment0 = rightLegAtt0
+            rightLegBeam.Attachment1 = rightLegAtt1
+            rightLegBeam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+            rightLegBeam.Width0 = 0.1
+            rightLegBeam.Width1 = 0.1
+            rightLegBeam.Transparency = NumberSequence.new(0)
+        end
+    end
+end
+
+-- Function to remove skeleton from a character
+local function removeSkeleton(char)
+    for i = 1, 5 do
+        local beam = char:FindFirstChild("SkeletonBeam" .. i)
+        if beam then
+            beam:Destroy()
+        end
+    end
+    for _, att in ipairs(char:GetChildren()) do
+        if att:IsA("Attachment") and att.Name:match("Att") then
+            att:Destroy()
+        end
+    end
+end
+
+-- Function to update highlights for all players
+local function updateHighlights()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p.Character then
+            if boxEnabled then
+                addBox(p.Character)
+            else
+                removeBox(p.Character)
+            end
+            if skeletonEnabled then
+                addSkeleton(p.Character)
+            else
+                removeSkeleton(p.Character)
+            end
+        end
+    end
+end
+
+-- Initial update
+updateHighlights()
+
+-- Handle new players joining
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function(char)
+        if boxEnabled then
+            addBox(char)
+        end
+        if skeletonEnabled then
+            addSkeleton(char)
+        end
+    end)
+    if p.Character then
+        if boxEnabled then
+            addBox(p.Character)
+        end
+        if skeletonEnabled then
+            addSkeleton(p.Character)
+        end
+    end
+end)
+
+-- Handle players leaving
+Players.PlayerRemoving:Connect(function(p)
+    if p.Character then
+        removeBox(p.Character)
+        removeSkeleton(p.Character)
+    end
+end)
+
+-- Handle character respawns
+for _, p in ipairs(Players:GetPlayers()) do
+    p.CharacterAdded:Connect(function(char)
+        if boxEnabled then
+            addBox(char)
+        end
+        if skeletonEnabled then
+            addSkeleton(char)
+        end
+    end)
+end
+
+-- Box button toggle
+boxButton.MouseButton1Click:Connect(function()
+    boxEnabled = not boxEnabled
+    boxButton.Text = "Box: " .. (boxEnabled and "ON" or "OFF")
+    boxButton.BackgroundColor3 = boxEnabled and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(70, 70, 70)
+    updateHighlights()
+end)
+
+-- Skeleton button toggle
+skeletonButton.MouseButton1Click:Connect(function()
+    skeletonEnabled = not skeletonEnabled
+    skeletonButton.Text = "Skeleton: " .. (skeletonEnabled and "ON" or "OFF")
+    skeletonButton.BackgroundColor3 = skeletonEnabled and Color3.fromRGB(0, 120, 0) or Color3.fromRGB(70, 70, 70)
+    updateHighlights()
+end)
